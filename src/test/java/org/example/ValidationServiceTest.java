@@ -1,77 +1,26 @@
 package org.example;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+class ValidationServiceTest {
 
-public class ValidationServiceTest {
-
-    ValidationService validationService;
-
-    @Before
-    public void setUp(){
-        validationService = new ValidationService();
+    @ParameterizedTest
+    @CsvSource({
+            "Ab1_asdahxc, 5, false",
+            "'', 5, false",
+            "Ab1_, 5, true",
+            "ab1_, 5, false",
+            "AB1_, 5, false",
+            "AB1, 5, false",
+            "Aa_, 5, false",
+            "Aa 1_, 5, false",
+            "'   Aa1_', 5, false",
+            ", 5, false"
+    })
+    void validationTest(String input, int maxLength, boolean expected) {
+        ValidationService validationService = new ValidationService();
+        boolean result = validationService.valid(input, maxLength);
+        Assertions.assertEquals(expected, result);
     }
-
-
-    @Test
-    public void invalidLongStringTest(){
-        boolean result = validationService.valid("Ab1_asdahxc", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidEmptyStringTest(){
-        boolean result = validationService.valid("", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void validStringTest(){
-        boolean result = validationService.valid("Ab1_", 5);
-        Assert.assertTrue(result);
-    }
-
-    @Test
-    public void invalidMissingUppercaseTest(){
-        boolean result = validationService.valid("ab1_", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidMissingLowercaseTest(){
-        boolean result = validationService.valid("AB1_", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidMissingSpecialCharacterTest(){
-        boolean result = validationService.valid("AB1", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidMissingDigitTest(){
-        boolean result = validationService.valid("Aa_", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidContainsWhitespaceTest(){
-        boolean result = validationService.valid("Aa 1_", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidContainsNewLinesTest(){
-        boolean result = validationService.valid("Aa\n1_", 5);
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void invalidNullTest(){
-        boolean result = validationService.valid(null, 5);
-        Assert.assertFalse(result);
-    }
-
 }
